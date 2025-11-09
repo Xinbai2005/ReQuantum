@@ -61,7 +61,7 @@ public class Localizer : ILocalizer, INotifyPropertyChanged, IInitializable
     public event PropertyChangedEventHandler? PropertyChanged;
     public Task InitializeAsync(IServiceProvider serviceProvider)
     {
-        if (_storage.TryGet<string>(LanguageStateKey, out var cultureName))
+        if (_storage.TryGet<string>(LanguageStateKey, out var cultureName) && cultureName is not null)
         {
             SetCulture(cultureName);
         }

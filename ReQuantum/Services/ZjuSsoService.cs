@@ -1,9 +1,8 @@
 using HtmlAgilityPack;
 using ReQuantum.Attributes;
-using ReQuantum.Client;
+using ReQuantum.Extensions;
 using ReQuantum.Models;
 using ReQuantum.Resources.I18n;
-using ReQuantum.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -27,6 +26,7 @@ public interface IZjuSsoService
 
     Task<Result> LoginAsync(string username, string password);
     void Logout();
+    event Action? OnLogin;
     event Action? OnLogout;
 }
 
@@ -58,6 +58,7 @@ public class ZjuSsoService : IZjuSsoService
         SaveState();
     }
 
+    public event Action? OnLogin;
     public event Action? OnLogout;
 
     public async Task<Result<RequestClient>> GetAuthenticatedClientAsync(RequestOptions? options = null)
@@ -139,6 +140,7 @@ public class ZjuSsoService : IZjuSsoService
 
         _state = new ZjuSsoState(username, password, cookieNew);
         SaveState();
+        OnLogin?.Invoke();
         return Result.Success(nameof(UIText.LoginSuccessful));
 
         #region LocalFunctions
@@ -268,16 +270,7 @@ public class ZjuSsoService : IZjuSsoService
 
     private void LoadState()
     {
-        try
-        {
-            var data = _storage.GetString(StateKey);
-            data = Encryption.Decrypt(data);
-            _state = JsonSerializer.Deserialize<ZjuSsoState>(data, SourceGenerationContext.Default.ZjuSsoState);
-        }
-        catch
-        {
-            _state = null;
-        }
+        _storage.TryGetWithEncryption(StateKey, out _state);
     }
 
     private void SaveState()
@@ -288,8 +281,6 @@ public class ZjuSsoService : IZjuSsoService
             return;
         }
 
-        var data = JsonSerializer.Serialize(_state, SourceGenerationContext.Default.ZjuSsoState);
-        data = Encryption.Encrypt(data);
-        _storage.SetString(StateKey, data);
+        _storage.SetWithEncryption(StateKey, _state);
     }
 }

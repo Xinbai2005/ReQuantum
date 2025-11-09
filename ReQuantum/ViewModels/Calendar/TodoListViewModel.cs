@@ -7,6 +7,8 @@ using ReQuantum.Services;
 using ReQuantum.Views;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ReQuantum.ViewModels;
 
@@ -14,6 +16,8 @@ namespace ReQuantum.ViewModels;
 public partial class TodoListViewModel : ViewModelBase<TodoListView>
 {
     private readonly ICalendarService _calendarService;
+    private readonly ICoursesZjuService _coursesZjuService;
+    private readonly IZjuSsoService _zjuSsoService;
 
     #region 数据集合
 
@@ -87,12 +91,36 @@ public partial class TodoListViewModel : ViewModelBase<TodoListView>
     [ObservableProperty]
     private string _warningMessage = string.Empty;
 
+    [ObservableProperty]
+    private bool _isSyncingCoursesZju;
+
     #endregion
 
-    public TodoListViewModel(ICalendarService calendarService)
+    public TodoListViewModel(ICalendarService calendarService, ICoursesZjuService coursesZjuService, IZjuSsoService zjuSsoService)
     {
         _calendarService = calendarService;
+        _coursesZjuService = coursesZjuService;
+        _zjuSsoService = zjuSsoService;
         LoadTodos();
+        
+        // 如果已登录，自动在后台抓取学在浙大待办
+        if (_zjuSsoService.IsAuthenticated)
+        {
+            _ = SyncCoursesZjuTodosAsync();
+        }
+        
+        // 订阅登录事件，登录后自动同步
+        _zjuSsoService.OnLogin += () =>
+        {
+            OnPropertyChanged(nameof(ShowCoursesZjuSyncButton));
+            _ = SyncCoursesZjuTodosAsync();
+        };
+        
+        // 订阅登出事件，登出后隐藏按钮
+        _zjuSsoService.OnLogout += () =>
+        {
+            OnPropertyChanged(nameof(ShowCoursesZjuSyncButton));
+        };
     }
 
     #region 数据加载
@@ -147,7 +175,7 @@ public partial class TodoListViewModel : ViewModelBase<TodoListView>
             DueTime = NewTodoDueTime
         };
 
-        _calendarService.AddTodo(todo);
+        _calendarService.AddOrUpdateTodo(todo);
 
         // 如果新待办的截止日期在选中日期之前或等于选中日期，则添加到列表
         if (todo.DueDate <= SelectedDate)
@@ -191,8 +219,70 @@ public partial class TodoListViewModel : ViewModelBase<TodoListView>
     [RelayCommand]
     private void UpdateTodo(CalendarTodo todo)
     {
-        _calendarService.UpdateTodo(todo);
+        _calendarService.AddOrUpdateTodo(todo);
         LoadTodos();
+    }
+
+    #endregion
+
+    #region 学在浙大待办同步
+
+    /// <summary>
+    /// 是否显示学在浙大同步按钮
+    /// </summary>
+    public bool ShowCoursesZjuSyncButton => _zjuSsoService.IsAuthenticated;
+
+    /// <summary>
+    /// 同步学在浙大待办
+    /// </summary>
+    [RelayCommand]
+    private async Task SyncCoursesZjuTodosAsync()
+    {
+        if (IsSyncingCoursesZju)
+        {
+            return;
+        }
+
+        IsSyncingCoursesZju = true;
+
+        try
+        {
+            var result = await _coursesZjuService.GetTodoListAsync();
+            if (!result.IsSuccess)
+            {
+                // 同步失败，可以显示错误消息
+                return;
+            }
+
+            var newTodos = result.Value;
+            var existingCoursesZjuTodos = _calendarService.GetAllTodos()
+                .Where(t => t.IsFromCoursesZju)
+                .ToList();
+
+            // 找出已经不存在的待办，标记为已完成
+            var newTodoIds = newTodos.Select(t => t.Id).ToHashSet();
+            foreach (var existingTodo in existingCoursesZjuTodos)
+            {
+                if (!newTodoIds.Contains(existingTodo.Id) && !existingTodo.IsCompleted)
+                {
+                    existingTodo.IsCompleted = true;
+                    _calendarService.AddOrUpdateTodo(existingTodo);
+                }
+            }
+
+            // 添加或更新新的待办
+            foreach (var todo in newTodos)
+            {
+                _calendarService.AddOrUpdateTodo(todo);
+            }
+
+            // 刷新列表
+            LoadTodos();
+        }
+        finally
+        {
+            IsSyncingCoursesZju = false;
+        }
     }
 
     #endregion

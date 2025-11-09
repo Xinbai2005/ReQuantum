@@ -12,8 +12,7 @@ public interface ICalendarService
 {
     // 便签相关
     List<CalendarNote> GetAllNotes();
-    void AddNote(CalendarNote note);
-    void UpdateNote(CalendarNote note);
+    void AddOrUpdateNote(CalendarNote note);
     void DeleteNote(Guid id);
 
     // 待办相关
@@ -21,8 +20,7 @@ public interface ICalendarService
     List<CalendarTodo> GetTodosByDate(DateOnly date); // 获取指定日期截止的所有待办（无论是否完成）
     List<CalendarTodo> GetTodosByDateRange(DateOnly startDate, DateOnly endDate);
     List<CalendarTodo> GetIncompleteTodosByDate(DateOnly date);
-    void AddTodo(CalendarTodo todo);
-    void UpdateTodo(CalendarTodo todo);
+    void AddOrUpdateTodo(CalendarTodo todo);
     void DeleteTodo(Guid id);
     void ToggleTodoComplete(Guid id);
 
@@ -30,8 +28,7 @@ public interface ICalendarService
     List<CalendarEvent> GetAllEvents();
     List<CalendarEvent> GetEventsByDate(DateOnly date);
     List<CalendarEvent> GetEventsByDateRange(DateOnly startDate, DateOnly endDate);
-    void AddEvent(CalendarEvent calendarEvent);
-    void UpdateEvent(CalendarEvent calendarEvent);
+    void AddOrUpdateEvent(CalendarEvent calendarEvent);
     void DeleteEvent(Guid id);
 }
 
@@ -60,20 +57,19 @@ public class CalendarService : ICalendarService
         return _notes.ToList();
     }
 
-    public void AddNote(CalendarNote note)
-    {
-        _notes.Add(note);
-        SaveNotes();
-    }
-
-    public void UpdateNote(CalendarNote note)
+    public void AddOrUpdateNote(CalendarNote note)
     {
         var index = _notes.FindIndex(n => n.Id == note.Id);
         if (index >= 0)
         {
             _notes[index] = note;
-            SaveNotes();
         }
+        else
+        {
+            _notes.Add(note);
+        }
+
+        SaveNotes();
     }
 
     public void DeleteNote(Guid id)
@@ -120,20 +116,19 @@ public class CalendarService : ICalendarService
             .ToList();
     }
 
-    public void AddTodo(CalendarTodo todo)
-    {
-        _todos.Add(todo);
-        SaveTodos();
-    }
-
-    public void UpdateTodo(CalendarTodo todo)
+    public void AddOrUpdateTodo(CalendarTodo todo)
     {
         var index = _todos.FindIndex(t => t.Id == todo.Id);
         if (index >= 0)
         {
             _todos[index] = todo;
-            SaveTodos();
         }
+        else
+        {
+            _todos.Add(todo);
+        }
+
+        SaveTodos();
     }
 
     public void DeleteTodo(Guid id)
@@ -145,11 +140,13 @@ public class CalendarService : ICalendarService
     public void ToggleTodoComplete(Guid id)
     {
         var todo = _todos.FirstOrDefault(t => t.Id == id);
-        if (todo is not null)
+        if (todo is null)
         {
-            todo.IsCompleted = !todo.IsCompleted;
-            SaveTodos();
+            return;
         }
+
+        todo.IsCompleted = !todo.IsCompleted;
+        SaveTodos();
     }
 
     #endregion
@@ -181,20 +178,19 @@ public class CalendarService : ICalendarService
             .ToList();
     }
 
-    public void AddEvent(CalendarEvent calendarEvent)
-    {
-        _events.Add(calendarEvent);
-        SaveEvents();
-    }
-
-    public void UpdateEvent(CalendarEvent calendarEvent)
+    public void AddOrUpdateEvent(CalendarEvent calendarEvent)
     {
         var index = _events.FindIndex(e => e.Id == calendarEvent.Id);
         if (index >= 0)
         {
             _events[index] = calendarEvent;
-            SaveEvents();
         }
+        else
+        {
+            _events.Add(calendarEvent);
+        }
+
+        SaveEvents();
     }
 
     public void DeleteEvent(Guid id)

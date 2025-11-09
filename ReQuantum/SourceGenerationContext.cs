@@ -9,4 +9,6 @@ namespace ReQuantum.Client;
 [JsonSerializable(typeof(List<CalendarNote>))]
 [JsonSerializable(typeof(List<CalendarTodo>))]
 [JsonSerializable(typeof(List<CalendarEvent>))]
+[JsonSerializable(typeof(CoursesZjuTodosResponse))]
+[JsonSerializable(typeof(CoursesZjuState))]
 public partial class SourceGenerationContext : JsonSerializerContext;

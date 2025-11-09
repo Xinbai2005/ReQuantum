@@ -204,7 +204,7 @@ public partial class EventListViewModel : ViewModelBase<EventListView>
             EndTime = NewEventEndTime
         };
 
-        _calendarService.AddEvent(calendarEvent);
+        _calendarService.AddOrUpdateEvent(calendarEvent);
 
         // 如果新日程的日期是选中日期，则添加到列表
         if (DateOnly.FromDateTime(calendarEvent.StartTime) == SelectedDate)
@@ -238,7 +238,7 @@ public partial class EventListViewModel : ViewModelBase<EventListView>
     [RelayCommand]
     private void UpdateEvent(CalendarEvent calendarEvent)
     {
-        _calendarService.UpdateEvent(calendarEvent);
+        _calendarService.AddOrUpdateEvent(calendarEvent);
         LoadEvents();
     }
 

@@ -72,7 +72,7 @@ public partial class NoteListViewModel : ViewModelBase<NoteListView>
             Content = NewNoteContent.Trim()
         };
 
-        _calendarService.AddNote(note);
+        _calendarService.AddOrUpdateNote(note);
         Notes.Add(note);
         NewNoteContent = string.Empty;
         IsAddDialogOpen = false;
@@ -95,7 +95,7 @@ public partial class NoteListViewModel : ViewModelBase<NoteListView>
     [RelayCommand]
     private void UpdateNote(CalendarNote note)
     {
-        _calendarService.UpdateNote(note);
+        _calendarService.AddOrUpdateNote(note);
     }
 
     #endregion

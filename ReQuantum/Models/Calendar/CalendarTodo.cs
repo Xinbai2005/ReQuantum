@@ -12,6 +12,7 @@ public class CalendarTodo
     public DateTime DueTime { get; set; } // 截止时间（包含日期和时间）
     public bool IsCompleted { get; set; }
     public DateTime CreatedAt { get; set; }
+    public bool IsFromCoursesZju { get; set; } // 是否来自学在浙大
 
     public CalendarTodo()
     {
