@@ -183,11 +183,12 @@ public partial class CalendarPartViewModel : ViewModelBase<CalendarPartView>
     /// <summary>
     /// 更新日历显示的天数，并添加事件标记
     /// </summary>
-    private void UpdateCalendarDays()
+    public void UpdateCalendarDays()
     {
         // 让日历控件重新生成
         OnPropertyChanged(nameof(SelectedYear));
         OnPropertyChanged(nameof(SelectedMonth));
+        OnPropertyChanged(nameof(WeekStartDate));
     }
 
     /// <summary>

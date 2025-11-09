@@ -53,5 +53,32 @@ public partial class CalendarViewModel : ViewModelBase<CalendarView>, IMenuItemP
                 EventListViewModel.SelectedDate = selectedDate;
             }
         };
+        
+        // 订阅待办列表的对话框关闭事件，刷新日历
+        TodoListViewModel.PropertyChanged += (s, e) =>
+        {
+            if (e.PropertyName == nameof(TodoListViewModel.IsAddDialogOpen) && !TodoListViewModel.IsAddDialogOpen)
+            {
+                CalendarPartViewModel.UpdateCalendarDays();
+            }
+        };
+        
+        // 订阅日程列表的对话框关闭事件，刷新日历
+        EventListViewModel.PropertyChanged += (s, e) =>
+        {
+            if (e.PropertyName == nameof(EventListViewModel.IsAddDialogOpen) && !EventListViewModel.IsAddDialogOpen)
+            {
+                CalendarPartViewModel.UpdateCalendarDays();
+            }
+        };
+        
+        // 订阅便签列表的对话框关闭事件，刷新日历
+        NoteListViewModel.PropertyChanged += (s, e) =>
+        {
+            if (e.PropertyName == nameof(NoteListViewModel.IsAddDialogOpen) && !NoteListViewModel.IsAddDialogOpen)
+            {
+                CalendarPartViewModel.UpdateCalendarDays();
+            }
+        };
     }
 }
