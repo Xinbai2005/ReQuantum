@@ -26,7 +26,7 @@ public static class CalendarItemsHelper
             {
                 Type = TimelineItemType.Todo,
                 StartTime = todo.DueTime, // 显示在截止时间位置
-                Title = todo.Content,
+                Content = todo.Content,
                 IsCompleted = todo.IsCompleted
             }).ToList();
 
@@ -54,7 +54,7 @@ public static class CalendarItemsHelper
                 Type = TimelineItemType.Event,
                 StartTime = evtStartTimeEndTimePair.evtStartTimePair.startTime,
                 EndTime = evtStartTimeEndTimePair.endTime,
-                Title = evtStartTimeEndTimePair.evtStartTimePair.evt.Title
+                Content = evtStartTimeEndTimePair.evtStartTimePair.evt.Content
             }));
 
         return items.OrderBy(i => i.StartTime).ToList();
@@ -74,7 +74,7 @@ public static class CalendarItemsHelper
         {
             IsTodo = item.Type == TimelineItemType.Todo,
             IsEvent = item.Type == TimelineItemType.Event,
-            Title = item.Title,
+            Content = item.Content,
             TopPosition = item.TopPosition,
             Height = item.Height,
             IsCompleted = item.IsCompleted,
@@ -117,7 +117,7 @@ public static class CalendarItemsHelper
             .Select(todo => new CalendarDayItem
             {
                 IsTodo = true,
-                Title = todo.Content,
+                Content = todo.Content,
                 IsCompleted = todo.IsCompleted
             }).ToList();
 
@@ -127,7 +127,7 @@ public static class CalendarItemsHelper
             evt => new CalendarDayItem
             {
                 IsEvent = true,
-                Title = evt.Title
+                Content = evt.Content
             }));
 
         if (items.Count <= 3)
@@ -139,7 +139,7 @@ public static class CalendarItemsHelper
         result.Add(new CalendarDayItem
         {
             IsMore = true,
-            Title = $"还有 {items.Count - 2} 项",
+            Content = $"还有 {items.Count - 2} 项",
             RemainingCount = items.Count - 2
         });
         return result;
@@ -164,7 +164,7 @@ public class TimelineItem
     public TimelineItemType Type { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime? EndTime { get; set; }
-    public string Title { get; set; } = string.Empty;
+    public string Content { get; set; } = string.Empty;
     public bool IsCompleted { get; set; }
 
     // 计算在时间线上的位置和高度（0-24小时）

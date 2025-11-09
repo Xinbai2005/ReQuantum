@@ -211,16 +211,10 @@
                      IsVisible="{Binding EventListViewModel.WarningMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
           
           <StackPanel Spacing="8">
-            <TextBlock Text="{Binding Localizer[Title]}" FontSize="14"/>
-            <TextBox Text="{Binding EventListViewModel.NewEventTitle}" 
-                     Watermark="{Binding Localizer[EnterEventTitle]}"/>
-          </StackPanel>
-          
-          <StackPanel Spacing="8">
             <TextBlock Text="{Binding Localizer[Content]}" FontSize="14"/>
             <TextBox Text="{Binding EventListViewModel.NewEventContent}" 
                      Watermark="{Binding Localizer[EnterEventContent]}"
-                     MinHeight="60"
+                     MinHeight="80"
                      TextWrapping="Wrap"
                      AcceptsReturn="True"/>
           </StackPanel>

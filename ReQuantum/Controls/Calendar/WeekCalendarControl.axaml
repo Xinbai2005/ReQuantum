@@ -149,7 +149,7 @@
                                   <Border.RenderTransform>
                                     <TranslateTransform Y="{Binding TopPosition, Converter={x:Static controls:CalendarConverters.HourToPixelConverter}}"/>
                                   </Border.RenderTransform>
-                                  <TextBlock Text="{Binding Title}"
+                                  <TextBlock Text="{Binding Content}"
                                            FontSize="10"
                                            Foreground="#C62828"
                                            FontWeight="Medium"
@@ -169,7 +169,7 @@
                                   <Border.RenderTransform>
                                     <TranslateTransform Y="{Binding TopPosition, Converter={x:Static controls:CalendarConverters.HourToPixelConverter}}"/>
                                   </Border.RenderTransform>
-                                  <TextBlock Text="{Binding Title}"
+                                  <TextBlock Text="{Binding Content}"
                                            FontSize="10"
                                            Foreground="#1565C0"
                                            FontWeight="Medium"

@@ -34,9 +34,6 @@ public partial class EventListViewModel : ViewModelBase<EventListView>
     #region 编辑状态
 
     [ObservableProperty]
-    private string _newEventTitle = string.Empty;
-
-    [ObservableProperty]
     private string _newEventContent = string.Empty;
 
     private DateTime _newEventStartTime = DateTime.Now;
@@ -177,7 +174,6 @@ public partial class EventListViewModel : ViewModelBase<EventListView>
     [RelayCommand]
     private void ShowAddDialog()
     {
-        NewEventTitle = string.Empty;
         NewEventContent = string.Empty;
         WarningMessage = string.Empty;
         // 使用选中日期，时间设置为当前时间
@@ -190,7 +186,7 @@ public partial class EventListViewModel : ViewModelBase<EventListView>
     [RelayCommand]
     private void AddEvent()
     {
-        if (string.IsNullOrWhiteSpace(NewEventTitle))
+        if (string.IsNullOrWhiteSpace(NewEventContent))
         {
             return;
         }
@@ -203,7 +199,6 @@ public partial class EventListViewModel : ViewModelBase<EventListView>
 
         var calendarEvent = new CalendarEvent
         {
-            Title = NewEventTitle.Trim(),
             Content = NewEventContent.Trim(),
             StartTime = NewEventStartTime,
             EndTime = NewEventEndTime
@@ -217,7 +212,6 @@ public partial class EventListViewModel : ViewModelBase<EventListView>
             Events.Add(calendarEvent);
         }
 
-        NewEventTitle = string.Empty;
         NewEventContent = string.Empty;
         NewEventStartTime = DateTime.Now;
         NewEventEndTime = DateTime.Now.AddHours(1);
@@ -228,7 +222,6 @@ public partial class EventListViewModel : ViewModelBase<EventListView>
     [RelayCommand]
     private void CancelAdd()
     {
-        NewEventTitle = string.Empty;
         NewEventContent = string.Empty;
         NewEventStartTime = DateTime.Now;
         NewEventEndTime = DateTime.Now.AddHours(1);

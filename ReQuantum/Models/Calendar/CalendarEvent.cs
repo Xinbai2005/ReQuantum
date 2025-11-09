@@ -8,7 +8,6 @@ namespace ReQuantum.Models;
 public class CalendarEvent
 {
     public Guid Id { get; set; }
-    public string Title { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }

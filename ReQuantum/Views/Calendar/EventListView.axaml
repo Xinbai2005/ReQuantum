@@ -45,7 +45,7 @@
                       Margin="0,4">
                 <Grid ColumnDefinitions="*,Auto">
                   <StackPanel Grid.Column="0" Spacing="4">
-                    <TextBlock Text="{Binding Title}" 
+                    <TextBlock Text="{Binding Content}" 
                              FontSize="14"
                              TextWrapping="Wrap"
                              FontWeight="Medium"/>
@@ -54,11 +54,6 @@
                       <Run Text=" - "/>
                       <Run Text="{Binding EndTime, StringFormat='yyyy-MM-dd HH:mm'}"/>
                     </TextBlock>
-                    <TextBlock Text="{Binding Content}" 
-                             FontSize="12"
-                             TextWrapping="Wrap"
-                             Opacity="0.8"
-                             IsVisible="{Binding Content, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
                   </StackPanel>
                   <Button Grid.Column="1" 
                         Command="{Binding $parent[UserControl].((viewModels:EventListViewModel)DataContext).DeleteEventCommand}"

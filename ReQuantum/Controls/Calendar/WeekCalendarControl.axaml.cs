@@ -183,7 +183,7 @@ public partial class WeekTimelineItem : ObservableObject
     private bool _isEvent;
 
     [ObservableProperty]
-    private string _title = string.Empty;
+    private string _content = string.Empty;
 
     [ObservableProperty]
     private double _topPosition; // 在时间线上的位置（0-24小时）

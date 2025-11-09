@@ -231,7 +231,7 @@ public partial class CalendarDay : ObservableObject
 public partial class CalendarDayItem : ObservableObject
 {
     [ObservableProperty]
-    private string _title = string.Empty;
+    private string _content = string.Empty;
 
     [ObservableProperty]
     private bool _isTodo;
