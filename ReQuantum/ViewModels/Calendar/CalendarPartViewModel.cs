@@ -52,11 +52,35 @@ public partial class CalendarPartViewModel : ViewModelBase<CalendarPartView>
 
     #endregion
 
+    /// <summary>
+    /// 月视图ViewModel
+    /// </summary>
+    public MonthCalendarViewModel MonthCalendarViewModel { get; }
+
+    /// <summary>
+    /// 周视图ViewModel
+    /// </summary>
+    public WeekCalendarViewModel WeekCalendarViewModel { get; }
+
     public CalendarPartViewModel(ICalendarService calendarService)
     {
         _calendarService = calendarService;
         YearMonthText = new LocalizedText(Localizer);
+        
+        // 初始化日历ViewModels
+        MonthCalendarViewModel = new MonthCalendarViewModel();
+        WeekCalendarViewModel = new WeekCalendarViewModel();
+        
+        // 订阅日期选择事件
+        MonthCalendarViewModel.DateSelected += OnCalendarDateSelected;
+        WeekCalendarViewModel.DateSelected += OnCalendarDateSelected;
+        
         UpdateYearMonthText();
+    }
+
+    private void OnCalendarDateSelected(object? sender, DateOnly date)
+    {
+        SelectDateCommand.Execute(date);
     }
 
     #region 视图切换
@@ -161,7 +185,7 @@ public partial class CalendarPartViewModel : ViewModelBase<CalendarPartView>
         {
             SelectedDate = new DateOnly(value, SelectedMonth, Math.Min(SelectedDate.Day, DateTime.DaysInMonth(value, SelectedMonth)));
             UpdateYearMonthText();
-            UpdateCalendarDays();
+            MonthCalendarViewModel.Year = value;
         }
     }
 
@@ -171,8 +195,19 @@ public partial class CalendarPartViewModel : ViewModelBase<CalendarPartView>
         {
             SelectedDate = new DateOnly(SelectedYear, value, Math.Min(SelectedDate.Day, DateTime.DaysInMonth(SelectedYear, value)));
             UpdateYearMonthText();
-            UpdateCalendarDays();
+            MonthCalendarViewModel.Month = value;
         }
+    }
+
+    partial void OnSelectedDateChanged(DateOnly value)
+    {
+        MonthCalendarViewModel.SelectedDate = value;
+        WeekCalendarViewModel.SelectedDate = value;
+    }
+
+    partial void OnWeekStartDateChanged(DateOnly value)
+    {
+        WeekCalendarViewModel.WeekStartDate = value;
     }
     
     private void UpdateYearMonthText()

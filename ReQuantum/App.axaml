@@ -11,11 +11,6 @@
 
      <Application.Resources>
          <ResourceDictionary>
-             <ResourceDictionary.MergedDictionaries>
-                 <ResourceInclude Source="/Controls/Calendar/MonthCalendarControl.axaml" />
-                 <ResourceInclude Source="/Controls/Calendar/WeekCalendarControl.axaml" />
-             </ResourceDictionary.MergedDictionaries>
-
              <FontFamily x:Key="SourceHanSansCn">/Assets/Fonts/SourceHanSansCN.ttf#Source Han Sans CN</FontFamily>
              <FontFamily x:Key="NotoSans">/Assets/Fonts/NotoSans.ttf#Noto Sans</FontFamily>
          </ResourceDictionary>

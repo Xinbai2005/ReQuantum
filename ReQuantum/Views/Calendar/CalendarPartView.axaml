@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:ReQuantum.ViewModels"
+             xmlns:views="clr-namespace:ReQuantum.Views"
              xmlns:controls="clr-namespace:ReQuantum.Controls"
              xmlns:r="https://github.com/metaone01/RelativeControl.Avalonia"
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="800"
@@ -80,20 +81,18 @@
     <!-- 周视图 -->
     <!-- 移动端：限制最大高度40vh，允许滚动 -->
     <!-- 桌面端：不限制高度 -->
-    <controls:WeekCalendarControl IsVisible="{Binding CurrentViewType, Converter={x:Static viewModels:EnumEqualsConverter.Instance}, ConverterParameter=Week}"
-                                 WeekStartDate="{Binding WeekStartDate}"
-                                 Classes.desktop="{Binding WindowService.IsDesktopMode}"
-                                 r:Relative.MaxHeight="{Binding WindowService.IsDesktopMode, Converter={x:Static controls:CalendarConverters.IsDesktopModeToMaxHeightConverter}}"/>
+    <views:WeekCalendarView IsVisible="{Binding $parent[UserControl].((viewModels:CalendarPartViewModel)DataContext).CurrentViewType, Converter={x:Static viewModels:EnumEqualsConverter.Instance}, ConverterParameter=Week}"
+                           DataContext="{Binding WeekCalendarViewModel}"
+                           Classes.desktop="{Binding WindowService.IsDesktopMode}"
+                           r:Relative.MaxHeight="{Binding WindowService.IsDesktopMode, Converter={x:Static controls:CalendarConverters.IsDesktopModeToMaxHeightConverter}}"/>
 
     <!-- 月视图 -->
     <!-- 移动端：限制最大高度40vh，内容自适应 -->
     <!-- 桌面端：不限制高度 -->
-    <controls:MonthCalendarControl IsVisible="{Binding CurrentViewType, Converter={x:Static viewModels:EnumEqualsConverter.Instance}, ConverterParameter=Month}"
-                                   Year="{Binding SelectedYear}"
-                                   Month="{Binding SelectedMonth}"
-                                   SelectedDate="{Binding SelectedDate}"
-                                   Classes.desktop="{Binding WindowService.IsDesktopMode}"
-                                   r:Relative.MaxHeight="{Binding WindowService.IsDesktopMode, Converter={x:Static controls:CalendarConverters.IsDesktopModeToMaxHeightConverter}}"/>
+    <views:MonthCalendarView IsVisible="{Binding $parent[UserControl].((viewModels:CalendarPartViewModel)DataContext).CurrentViewType, Converter={x:Static viewModels:EnumEqualsConverter.Instance}, ConverterParameter=Month}"
+                            DataContext="{Binding MonthCalendarViewModel}"
+                            Classes.desktop="{Binding WindowService.IsDesktopMode}"
+                            r:Relative.MaxHeight="{Binding WindowService.IsDesktopMode, Converter={x:Static controls:CalendarConverters.IsDesktopModeToMaxHeightConverter}}"/>
 
   </StackPanel>
 </UserControl>
