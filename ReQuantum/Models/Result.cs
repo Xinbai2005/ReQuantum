@@ -2,7 +2,12 @@
 
 namespace ReQuantum.Models;
 
-public record Result(bool IsSuccess, string Message = "")
+public record FormattableMessage(string TemplateKey, object?[] Arguments)
+{
+    public override string ToString() => string.Format(TemplateKey, Arguments);
+}
+
+public record Result(bool IsSuccess, FormattableMessage Message)
 {
     #region Static Helper
     public static implicit operator Result(FailResult result)
@@ -10,45 +15,40 @@ public record Result(bool IsSuccess, string Message = "")
         return new Result(false, result.Message);
     }
 
-    public static FailResult Fail(string message)
+    public static FailResult Fail(FormattableMessage message)
     {
         return new FailResult(message);
     }
 
-    public static Result Success(string message = "")
+    public static FailResult Fail(string messageTemplateKey, params object?[] messageArgs)
     {
-        return new Result(true, message);
+        return new FailResult(new FormattableMessage(messageTemplateKey, messageArgs));
     }
 
-    public static Result<T> Success<T>(T value)
+    public static Result Success(string messageTemplateKey, params object?[] messageArgs)
     {
-        return new Result<T>(true, string.Empty)
-        {
-            Value = value
-        };
+        return new Result(true, new FormattableMessage(messageTemplateKey, messageArgs));
+    }
+
+    public static Result<T> Success<T>(T value, string messageTemplateKey = "", params object?[] messageArgs)
+    {
+        return new Result<T>(true, new FormattableMessage(messageTemplateKey, messageArgs), value);
     }
     #endregion
 }
 
-public record FailResult(string Message);
+public record FailResult(FormattableMessage Message);
 
 
 public record Result<T>(
     [property: MemberNotNullWhen(true, nameof(Result<T>.Value))]
     bool IsSuccess,
-    string Message = "")
+    FormattableMessage Message,
+    T? Value)
 {
-    /// <summary>
-    /// 返回的数据
-    /// </summary>
-    public T? Value { get; init; }
-
     public static implicit operator Result<T>(FailResult result)
     {
-        return new Result<T>(false, result.Message)
-        {
-            Value = default
-        };
+        return new Result<T>(false, result.Message, default);
     }
 
     public static implicit operator Result<T>(T value)

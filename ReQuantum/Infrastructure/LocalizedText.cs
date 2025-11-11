@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using ReQuantum.Models;
 using ReQuantum.Services;
 using System;
 using System.Globalization;
@@ -37,12 +38,10 @@ public partial class LocalizedText : ObservableObject, IDisposable
         Arguments = args;
     }
 
-    /// <summary>
-    /// 手动刷新文本（当参数值变化但引用未变时使用）
-    /// </summary>
-    public void Refresh()
+    public void Set(FormattableMessage message)
     {
-        OnPropertyChanged(nameof(Text));
+        Key = message.TemplateKey;
+        Arguments = message.Arguments;
     }
 
     private void OnCultureChanged(CultureInfo cultureInfo)
