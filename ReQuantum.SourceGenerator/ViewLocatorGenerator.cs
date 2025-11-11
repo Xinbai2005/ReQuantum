@@ -19,7 +19,7 @@ public class ViewLocatorGenerator : IIncrementalGenerator
             .Where(static m => m is not null);
 
         var compilationAndModels = context.CompilationProvider.Combine(viewModelDeclarations.Collect());
-        context.RegisterSourceOutput(compilationAndModels, static (spc, source) => Execute(spc, source.Left, source.Right));
+        context.RegisterSourceOutput(compilationAndModels, static (spc, source) => Execute(spc, source.Right));
     }
 
     private static ViewModelInfo? GetViewModelInfo(GeneratorSyntaxContext context)
@@ -53,7 +53,7 @@ public class ViewLocatorGenerator : IIncrementalGenerator
         return null;
     }
 
-    private static void Execute(SourceProductionContext context, Compilation compilation, ImmutableArray<ViewModelInfo?> viewModels)
+    private static void Execute(SourceProductionContext context, ImmutableArray<ViewModelInfo?> viewModels)
     {
         if (viewModels.IsDefaultOrEmpty)
             return;
@@ -89,23 +89,18 @@ public class ViewLocatorGenerator : IIncrementalGenerator
         sb.AppendLine();
         sb.AppendLine("        if (viewType is null)");
         sb.AppendLine("        {");
-        sb.AppendLine("            var name = param?.GetType().FullName?.Replace(\"ViewModel\", \"View\", global::System.StringComparison.Ordinal);");
-        sb.AppendLine("            if (name is not null)");
-        sb.AppendLine("            {");
-        sb.AppendLine("                var type = global::System.Type.GetType(name);");
-        sb.AppendLine("                if (type is not null)");
-        sb.AppendLine("                {");
-        sb.AppendLine("                    viewType = type;");
-        sb.AppendLine("                }");
-        sb.AppendLine("            }");
-        sb.AppendLine("        }");
-        sb.AppendLine();
-        sb.AppendLine("        if (viewType is null)");
-        sb.AppendLine("        {");
         sb.AppendLine("            return null;");
         sb.AppendLine("        }");
         sb.AppendLine();
-        sb.AppendLine("        return global::Microsoft.Extensions.DependencyInjection.ActivatorUtilities.GetServiceOrCreateInstance(_serviceProvider, viewType) as global::Avalonia.Controls.Control;");
+        sb.AppendLine("        var view = global::Microsoft.Extensions.DependencyInjection.ActivatorUtilities");
+        sb.AppendLine("            .GetServiceOrCreateInstance(_serviceProvider, viewType) as global::Avalonia.Controls.Control;");
+        sb.AppendLine();
+        sb.AppendLine("        if (view is not null)");
+        sb.AppendLine("        {");
+        sb.AppendLine("            view.DataContext = param;");
+        sb.AppendLine("        }");
+        sb.AppendLine();
+        sb.AppendLine("        return view;");
         sb.AppendLine("    }");
         sb.AppendLine("}");
 
