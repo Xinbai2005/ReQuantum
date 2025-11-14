@@ -6,12 +6,11 @@ using Avalonia.Logging;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using ReQuantum.Abstractions;
-using ReQuantum.Extensions;
 using ReQuantum.Generated;
-using ReQuantum.Options;
+using ReQuantum.Infrastructure.Abstractions;
+using ReQuantum.Infrastructure.Options;
+using ReQuantum.Infrastructure.Services;
 using ReQuantum.Services;
-using ReQuantum.Shells;
 using ReQuantum.ViewModels;
 using Serilog;
 using System;
@@ -19,6 +18,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ShellView = ReQuantum.Infrastructure.Presentations.ShellView;
+using ShellViewModel = ReQuantum.Infrastructure.Presentations.ShellViewModel;
+using ShellWindow = ReQuantum.Infrastructure.Presentations.ShellWindow;
 
 namespace ReQuantum;
 
@@ -33,13 +35,14 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        var appFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ReQuantum");
+        Directory.CreateDirectory(appFolderPath);
 
         var logger = new LoggerConfiguration()
 #if RELEASE
             .MinimumLevel.Warning()
             .WriteTo.File(
-                Path.Combine(appDataPath, "ReQuantum", "logs", "app-.log"),
+                Path.Combine(appFolderPath, "logs", "app-.log"),
                 rollingInterval: RollingInterval.Day,
                 retainedFileCountLimit: 7,
                 fileSizeLimitBytes: 10_000_000)
@@ -71,12 +74,8 @@ public partial class App : Application
         serviceCollection.AddSingleton<IDataTemplate, GeneratedViewLocator>();
         serviceCollection.AutoAddGeneratedServices();
 
-        serviceCollection.AddSingleton(typeof(IMenuItemAccessor<>), typeof(MenuItemAccessorFactory<>));
-
         serviceCollection.Configure<StorageOptions>(options =>
         {
-            var appFolderPath = Path.Combine(appDataPath, "ReQuantum");
-            Directory.CreateDirectory(appFolderPath);
             options.StoragePath = Path.Combine(appFolderPath, "ReQuantum.db");
         });
 
@@ -84,8 +83,7 @@ public partial class App : Application
 
         SingletonManager.Instance.Configure(_serviceProvider);
 
-        var initializableObjects = _serviceProvider.GetServices<IInitializable>();
-        Task.WhenAll(initializableObjects.Select(i => i.InitializeAsync(_serviceProvider))).Wait();
+        _ = _serviceProvider.GetServices<IDaemonService>().ToArray();
 
         var navigator = _serviceProvider.GetRequiredService<INavigator>();
         var navigationMenuService = _serviceProvider.GetRequiredService<IMenuManager>();

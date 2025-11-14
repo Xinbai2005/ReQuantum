@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
@@ -73,7 +73,7 @@ public class ViewLocatorGenerator : IIncrementalGenerator
         sb.AppendLine("        _serviceProvider = serviceProvider;");
         sb.AppendLine("    }");
         sb.AppendLine();
-        sb.AppendLine("    public bool Match(object? data) => data is global::ReQuantum.ViewModels.IViewModel;");
+        sb.AppendLine("    public bool Match(object? data) => data is global::ReQuantum.Infrastructure.Abstractions.IViewModel;");
         sb.AppendLine();
         sb.AppendLine("    public global::Avalonia.Controls.Control? Build(object? param)");
         sb.AppendLine("    {");
@@ -95,10 +95,7 @@ public class ViewLocatorGenerator : IIncrementalGenerator
         sb.AppendLine("        var view = global::Microsoft.Extensions.DependencyInjection.ActivatorUtilities");
         sb.AppendLine("            .GetServiceOrCreateInstance(_serviceProvider, viewType) as global::Avalonia.Controls.Control;");
         sb.AppendLine();
-        sb.AppendLine("        if (view is not null)");
-        sb.AppendLine("        {");
-        sb.AppendLine("            view.DataContext = param;");
-        sb.AppendLine("        }");
+        sb.AppendLine("        view?.DataContext = param;");
         sb.AppendLine();
         sb.AppendLine("        return view;");
         sb.AppendLine("    }");

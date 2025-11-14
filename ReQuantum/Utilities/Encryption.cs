@@ -10,19 +10,36 @@ namespace ReQuantum.Utilities;
 public static class Encryption
 {
     /// <summary>
-    /// 设备特定的密钥和初始化向量，基于设备名称生成
+    /// 设备特定的密钥和初始化向量，基于尽可能唯一的设备标识生成。
     /// </summary>
     private static readonly Lazy<(byte[] Key, byte[] IV)> DeviceSpecificKeyIv = new(() =>
     {
-        var deviceId = Environment.MachineName;
-        using var deriveBytes = new Rfc2898DeriveBytes(
-            deviceId,
-            "QuantumSalt"u8.ToArray(),
-            10000,
-            HashAlgorithmName.SHA256);
+        var deviceId = GetStableDeviceId();
 
-        return (deriveBytes.GetBytes(32), deriveBytes.GetBytes(16));
+        var salt = "ReQuantum.DeviceEncryption.Salt.v1"u8.ToArray();
+
+        var keyMaterial = Rfc2898DeriveBytes.Pbkdf2(
+            password: deviceId,
+            salt: salt,
+            iterations: 100_000,
+            hashAlgorithm: HashAlgorithmName.SHA256,
+            outputLength: 48);
+
+        var key = keyMaterial.AsSpan(0, 32).ToArray();
+        var iv = keyMaterial.AsSpan(32, 16).ToArray();
+
+        return (key, iv);
     });
+
+    /// <summary>
+    /// 获取尽可能稳定的设备唯一标识符。
+    /// 此方法不保证全局唯一，但在同一设备上应保持稳定。
+    /// </summary>
+    private static string GetStableDeviceId()
+    {
+        // TODO: 改进此方法以获取更稳定和安全的设备标识符
+        return $"{Environment.MachineName}_{Environment.UserName}";
+    }
 
     /// <summary>
     /// 使用AES算法加密字符串

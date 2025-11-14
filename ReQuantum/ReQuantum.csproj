@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <PublishAOT>true</PublishAOT>
@@ -9,6 +9,13 @@
   
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <AvaloniaXaml Remove="Modules\NewFolder\**" />
+    <Compile Remove="Modules\NewFolder\**" />
+    <EmbeddedResource Remove="Modules\NewFolder\**" />
+    <None Remove="Modules\NewFolder\**" />
   </ItemGroup>
   
   <ItemGroup>
@@ -40,16 +47,16 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>UIText.resx</DependentUpon>
     </Compile>
-    <Compile Update="Shells\ShellWindow.axaml.cs">
+    <Compile Update="Infrastructure\Presentations\ShellWindow.axaml.cs">
       <DependentUpon>ShellWindow.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Shells\ShellView.axaml.cs">
+    <Compile Update="Infrastructure\Presentations\ShellView.axaml.cs">
       <DependentUpon>ShellView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\Calendar\CalendarView.axaml.cs">
+    <Compile Update="Modules\Calendar\Presentations\CalendarView.axaml.cs">
       <DependentUpon>CalendarView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\DashboardView.axaml.cs">
+    <Compile Update="Modules\Dashboard\Presentations\DashboardView.axaml.cs">
       <DependentUpon>DashboardView.axaml</DependentUpon>
     </Compile>
   </ItemGroup>

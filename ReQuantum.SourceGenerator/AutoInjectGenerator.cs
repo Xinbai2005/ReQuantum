@@ -177,24 +177,25 @@ public class AutoInjectGenerator : IIncrementalGenerator
         var serviceTypeName = serviceClass.ToDisplayString();
 
         // 当生命周期是Singleton或Scoped时，特殊处理
-        if (lifetime is "ServiceLifetime.Singleton" or "ServiceLifetime.Scoped")
+        if (lifetime == "ServiceLifetime.Singleton" || lifetime == "ServiceLifetime.Scoped")
         {
-            var typesToRegister = new List<string>();
+            var typesToRegister = new HashSet<string>();
 
             if (hasExplicitRegisterTypes)
             {
-                // 处理显式指定的注册类型
-                typesToRegister.AddRange(registerTypesExpr.Values
-                    .Select(typeArg => typeArg.Value?.ToString() ?? "")
-                    .Where(typeName => !string.IsNullOrEmpty(typeName) && typeName != serviceTypeName));
+                foreach (var typeName in registerTypesExpr.Values
+                             .Select(type => type.Value?.ToString() ?? "")
+                             .Where(typeName => !string.IsNullOrEmpty(typeName)))
+                {
+                    typesToRegister.Add(typeName);
+                }
             }
             else
             {
-                // 使用实现的所有接口
                 var interfaces = serviceClass.AllInterfaces;
-                if (interfaces.Length > 0)
+                foreach (var @interface in interfaces)
                 {
-                    typesToRegister.AddRange(interfaces.Select(face => face.ToDisplayString()));
+                    typesToRegister.Add(@interface.ToDisplayString());
                 }
             }
 
@@ -209,7 +210,7 @@ public class AutoInjectGenerator : IIncrementalGenerator
                 sb.AppendLine($"            services.Add(new ServiceDescriptor(typeof({serviceTypeName}), typeof({serviceTypeName}), {lifetime}));");
 
                 // 然后注册所有需要的类型
-                foreach (var typeName in typesToRegister)
+                foreach (var typeName in typesToRegister.Where(type => type != serviceTypeName))
                 {
                     sb.AppendLine($"            services.Add(new ServiceDescriptor(typeof({typeName}), sp => sp.GetRequiredService(typeof({serviceTypeName})), {lifetime}));");
                 }
