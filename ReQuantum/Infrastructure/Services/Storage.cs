@@ -1,7 +1,6 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Options;
 using ReQuantum.Attributes;
-using ReQuantum.Client;
 using ReQuantum.Infrastructure.Abstractions;
 using ReQuantum.Infrastructure.Options;
 using ReQuantum.Utilities;

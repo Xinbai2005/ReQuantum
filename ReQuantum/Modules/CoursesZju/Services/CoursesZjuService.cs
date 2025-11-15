@@ -1,13 +1,11 @@
 using Microsoft.Extensions.Logging;
 using ReQuantum.Attributes;
-using ReQuantum.Client;
 using ReQuantum.Infrastructure.Abstractions;
 using ReQuantum.Infrastructure.Models;
 using ReQuantum.Infrastructure.Services;
 using ReQuantum.Modules.Calendar.Entities;
 using ReQuantum.Modules.CoursesZju.Models;
 using ReQuantum.Modules.ZjuSso.Services;
-using ReQuantum.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +16,7 @@ namespace ReQuantum.Modules.CoursesZju.Services;
 
 public interface ICoursesZjuService
 {
-    Task<Result<List<CalendarTodo>>> GetTodoListAsync();
+    Task<Result<HashSet<CoursesZjuTodoDto>>> GetTodoListAsync();
 }
 
 [AutoInject(Lifetime.Singleton)]
@@ -40,7 +38,7 @@ public class CoursesZjuService : ICoursesZjuService, IDaemonService
         LoadState();
     }
 
-    public async Task<Result<List<CalendarTodo>>> GetTodoListAsync()
+    public async Task<Result<HashSet<CoursesZjuTodoDto>>> GetTodoListAsync()
     {
         var clientResult = await GetAuthenticatedClient();
         if (!clientResult.IsSuccess)
@@ -66,15 +64,7 @@ public class CoursesZjuService : ICoursesZjuService, IDaemonService
                 return Result.Fail("解析待办事项失败");
             }
 
-            return response.TodoList.ToHashSet()
-                .Select(t => new CalendarTodo
-                {
-                    Id = Converter.LongToGuid(t.Id),
-                    Content = $"{t.CourseName}\n{t.Title}",
-                    DueTime = t.EndTime.ToLocalTime(),
-                    IsCompleted = false,
-                    IsFromCoursesZju = true
-                }).ToList();
+            return response.TodoList.ToHashSet();
         }
         catch (Exception ex)
         {
@@ -125,5 +115,28 @@ public class CoursesZjuService : ICoursesZjuService, IDaemonService
         }
 
         _storage.SetWithEncryption(StateKey, _state);
+    }
+}
+
+public static class CalendarTodoExtensions
+{
+    private const string CoursesZju = "CoursesZju";
+    extension(CalendarTodo todo)
+    {
+        public bool IsFromCoursesZju
+        {
+            get => todo.From == CoursesZju;
+            set
+            {
+                if (todo.From == CoursesZju && !value)
+                {
+                    todo.From = string.Empty;
+                }
+                else if (todo.From != CoursesZju && value)
+                {
+                    todo.From = CoursesZju;
+                }
+            }
+        }
     }
 }

@@ -6,12 +6,13 @@ using ReQuantum.Infrastructure.Services;
 using ReQuantum.Modules.Calendar.Entities;
 using ReQuantum.Modules.Calendar.Services;
 using ReQuantum.Resources.I18n;
+using ReQuantum.ViewModels;
 using ReQuantum.Views;
 using System;
 using System.Collections.ObjectModel;
 using LocalizedText = ReQuantum.Infrastructure.Entities.LocalizedText;
 
-namespace ReQuantum.ViewModels;
+namespace ReQuantum.Modules.Calendar.Presentations;
 
 [AutoInject(Lifetime.Singleton, RegisterTypes = [typeof(EventListViewModel), typeof(INotificationHandler<CalendarSelectedDateChanged>)])]
 public partial class EventListViewModel : ViewModelBase<EventListView>, INotificationHandler<CalendarSelectedDateChanged>

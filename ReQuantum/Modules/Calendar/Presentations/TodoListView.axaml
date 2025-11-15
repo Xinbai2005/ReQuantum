@@ -19,15 +19,28 @@
             CornerRadius="8"
             Padding="16">
       <StackPanel Spacing="12">
-        <Grid ColumnDefinitions="*,Auto,Auto">
+        <Grid ColumnDefinitions="*,Auto,Auto,Auto">
           <TextBlock Grid.Column="0"
                    Text="{Binding Localizer[Todos]}" 
                    FontSize="18" 
                    FontWeight="SemiBold"
                    VerticalAlignment="Center"/>
           
-          <!-- 学在浙大同步按钮 -->
+          <!-- 教务网课程表同步按钮 -->
           <Button Grid.Column="1"
+                Command="{Binding SyncZdbkScheduleCommand}"
+                IsVisible="{Binding ShowZdbkSyncButton}"
+                Padding="12,6"
+                Margin="0,0,8,0">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+              <TextBlock Text="📅" FontSize="14" IsVisible="{Binding !IsSyncingZdbk}"/>
+              <TextBlock Text="⏳" FontSize="14" IsVisible="{Binding IsSyncingZdbk}"/>
+              <TextBlock Text="同步课程表" FontSize="14"/>
+            </StackPanel>
+          </Button>
+          
+          <!-- 学在浙大同步按钮 -->
+          <Button Grid.Column="2"
                 Command="{Binding SyncCoursesZjuTodosCommand}"
                 IsVisible="{Binding ShowCoursesZjuSyncButton}"
                 Padding="12,6"
@@ -39,7 +52,7 @@
             </StackPanel>
           </Button>
           
-          <Button Grid.Column="2"
+          <Button Grid.Column="3"
                 Command="{Binding ShowAddDialogCommand}"
                 Padding="12,6">
             <StackPanel Orientation="Horizontal" Spacing="4">

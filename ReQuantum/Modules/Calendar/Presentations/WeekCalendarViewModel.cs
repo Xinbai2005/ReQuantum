@@ -4,8 +4,8 @@ using ReQuantum.Attributes;
 using ReQuantum.Infrastructure.Abstractions;
 using ReQuantum.Infrastructure.Services;
 using ReQuantum.Models;
-using ReQuantum.Modules.Calendar.Presentations;
 using ReQuantum.Modules.Calendar.Services;
+using ReQuantum.ViewModels;
 using ReQuantum.Views;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 
-namespace ReQuantum.ViewModels;
+namespace ReQuantum.Modules.Calendar.Presentations;
 
 /// <summary>
 /// 周视图日历ViewModel

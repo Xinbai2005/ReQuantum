@@ -16,7 +16,7 @@ public partial class CalendarTodo : ObservableObject
     private bool _isCompleted;
 
     public DateTime CreatedAt { get; set; }
-    public bool IsFromCoursesZju { get; set; } // 是否来自学在浙大
+    public string From { get; set; } = string.Empty;
 
     public CalendarTodo()
     {
