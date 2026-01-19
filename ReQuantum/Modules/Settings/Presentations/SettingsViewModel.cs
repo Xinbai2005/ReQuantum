@@ -1,9 +1,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using IconPacks.Avalonia.Material;
-using ReQuantum.Attributes;
 using ReQuantum.Infrastructure.Abstractions;
 using ReQuantum.Infrastructure.Entities;
 using ReQuantum.Infrastructure.Services;
+using ReQuantum.Modules.Common.Attributes;
 using ReQuantum.Modules.Menu.Abstractions;
 using ReQuantum.Resources.I18n;
 using ReQuantum.Services;

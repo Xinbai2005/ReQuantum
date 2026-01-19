@@ -72,6 +72,7 @@ public partial class App : Application
         serviceCollection.AddLogging(loggingBuilder => loggingBuilder.ClearProviders().AddSerilog(dispose: true));
 
         serviceCollection.AddSingleton<IDataTemplate, GeneratedViewLocator>();
+        serviceCollection.AddSingleton<System.Net.Http.HttpClient>();
         serviceCollection.AutoAddGeneratedServices();
 
         serviceCollection.Configure<StorageOptions>(options =>

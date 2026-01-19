@@ -1,11 +1,11 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ReQuantum.Attributes;
 using ReQuantum.Infrastructure.Abstractions;
 using ReQuantum.Infrastructure.Services;
 using ReQuantum.Models;
-using ReQuantum.Modules.Calendar.Presentations;
 using ReQuantum.Modules.Calendar.Services;
+using ReQuantum.Modules.Common.Attributes;
+using ReQuantum.ViewModels;
 using ReQuantum.Views;
 using System;
 using System.Collections.Generic;
@@ -13,13 +13,13 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 
-namespace ReQuantum.ViewModels;
+namespace ReQuantum.Modules.Calendar.Presentations;
 
 /// <summary>
 /// 周视图日历ViewModel
 /// </summary>
-[AutoInject(Lifetime.Singleton, RegisterTypes = [typeof(WeekCalendarViewModel), typeof(INotificationHandler<CalendarSelectedDateChanged>)])]
-public partial class WeekCalendarViewModel : ViewModelBase<WeekCalendarView>, INotificationHandler<CalendarSelectedDateChanged>
+[AutoInject(Lifetime.Singleton, RegisterTypes = [typeof(WeekCalendarViewModel), typeof(IEventHandler<CalendarSelectedDateChanged>)])]
+public partial class WeekCalendarViewModel : ViewModelBase<WeekCalendarView>, IEventHandler<CalendarSelectedDateChanged>
 {
     private readonly ICalendarService _calendarService;
 
@@ -100,12 +100,12 @@ public partial class WeekCalendarViewModel : ViewModelBase<WeekCalendarView>, IN
     public void SelectDate(DateOnly date)
     {
         SelectedDate = date;
-        Dispatcher.Publish(new CalendarSelectedDateChanged(date));
+        Publisher.Publish(new CalendarSelectedDateChanged(date));
     }
 
-    public void Handle(CalendarSelectedDateChanged notification)
+    public void Handle(CalendarSelectedDateChanged @event)
     {
-        SelectedDate = notification.Date;
+        SelectedDate = @event.Date;
     }
 }
 

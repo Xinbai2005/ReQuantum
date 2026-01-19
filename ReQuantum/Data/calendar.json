@@ -1,0 +1,26 @@
+﻿{
+  "semester_name": "2025-2026-1",
+  "start_date": "2025-09-15",
+  "end_date": "2026-01-12",
+  "course_adjustments": [
+    {
+      "original_date": "2025-10-01",
+      "target_date": "2025-09-27",
+      "reason": "国庆节调休"
+    },
+    {
+      "original_date": "2025-10-02",
+      "target_date": "2025-09-28",
+      "reason": "国庆节调休"
+    }
+  ],
+  "class_suspension_dates": [
+    "2025-10-03",
+    "2025-10-04",
+    "2025-10-05",
+    "2025-10-06",
+    "2025-10-07"
+  ],
+  "version": "2025.1.0",
+  "is_short_semester": false
+}

@@ -1,11 +1,11 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ReQuantum.Attributes;
 using ReQuantum.Infrastructure.Abstractions;
 using ReQuantum.Infrastructure.Services;
 using ReQuantum.Models;
 using ReQuantum.Modules.Calendar.Presentations;
 using ReQuantum.Modules.Calendar.Services;
+using ReQuantum.Modules.Common.Attributes;
 using ReQuantum.Views;
 using System;
 using System.Collections.Concurrent;
@@ -16,8 +16,8 @@ using System.Linq;
 
 namespace ReQuantum.ViewModels;
 
-[AutoInject(Lifetime.Singleton, RegisterTypes = [typeof(MonthCalendarViewModel), typeof(INotificationHandler<CalendarSelectedDateChanged>)])]
-public partial class MonthCalendarViewModel : ViewModelBase<MonthCalendarView>, INotificationHandler<CalendarSelectedDateChanged>
+[AutoInject(Lifetime.Singleton, RegisterTypes = [typeof(MonthCalendarViewModel), typeof(IEventHandler<CalendarSelectedDateChanged>)])]
+public partial class MonthCalendarViewModel : ViewModelBase<MonthCalendarView>, IEventHandler<CalendarSelectedDateChanged>
 {
     private readonly ICalendarService _calendarService;
 
@@ -139,12 +139,12 @@ public partial class MonthCalendarViewModel : ViewModelBase<MonthCalendarView>, 
     public void SelectDate(DateOnly date)
     {
         SelectedDate = date;
-        Dispatcher.Publish(new CalendarSelectedDateChanged(date));
+        Publisher.Publish(new CalendarSelectedDateChanged(date));
     }
 
-    public void Handle(CalendarSelectedDateChanged notification)
+    public void Handle(CalendarSelectedDateChanged @event)
     {
-        SelectedDate = notification.Date;
+        SelectedDate = @event.Date;
     }
 }
 

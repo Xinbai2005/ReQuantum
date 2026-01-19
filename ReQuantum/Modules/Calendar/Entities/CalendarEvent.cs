@@ -12,6 +12,7 @@ public class CalendarEvent
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
     public DateTime CreatedAt { get; set; }
+    public string From { get; set; } = string.Empty;
 
     public CalendarEvent()
     {

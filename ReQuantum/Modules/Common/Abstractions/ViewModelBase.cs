@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using ReQuantum.Infrastructure.Services;
 using System.ComponentModel;
 using System.Globalization;
@@ -13,14 +13,14 @@ public abstract class ViewModelBase : ObservableObject, IViewModel
     public ILocalizer Localizer { get; }
     public IWindowService WindowService { get; }
     public INavigator Navigator { get; }
-    public INotificationDispatcher Dispatcher;
+    public IEventPublisher Publisher { get; }
 
-    protected ViewModelBase()
+    protected ViewModelBase(ILocalizer? localizer = null, IWindowService? windowService = null, INavigator? navigator = null, IEventPublisher? publisher = null)
     {
-        Localizer = SingletonManager.Instance.GetInstance<ILocalizer>();
-        WindowService = SingletonManager.Instance.GetInstance<IWindowService>();
-        Navigator = SingletonManager.Instance.GetInstance<INavigator>();
-        Dispatcher = SingletonManager.Instance.GetInstance<INotificationDispatcher>();
+        Localizer = localizer ?? SingletonManager.Instance.GetInstance<ILocalizer>();
+        WindowService = windowService ?? SingletonManager.Instance.GetInstance<IWindowService>();
+        Navigator = navigator ?? SingletonManager.Instance.GetInstance<INavigator>();
+        Publisher = publisher ?? SingletonManager.Instance.GetInstance<IEventPublisher>();
 
         Localizer.CultureChanged += OnCultureChanged;
         WindowService.PlatformModeChanged += OnPlatformModeChanged;

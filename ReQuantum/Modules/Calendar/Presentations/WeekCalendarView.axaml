@@ -6,9 +6,9 @@
              xmlns:presentations="clr-namespace:ReQuantum.Modules.Calendar.Presentations"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
              x:Class="ReQuantum.Views.WeekCalendarView"
-             x:DataType="viewModels:WeekCalendarViewModel">
+             x:DataType="presentations:WeekCalendarViewModel">
   <Design.DataContext>
-    <viewModels:WeekCalendarViewModel />
+    <presentations:WeekCalendarViewModel />
   </Design.DataContext>
 
   <Grid>
@@ -30,7 +30,7 @@
           </ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
-          <DataTemplate DataType="viewModels:WeekDay">
+          <DataTemplate DataType="presentations:WeekDay">
             <Button Background="Transparent"
                     BorderThickness="0"
                     Padding="8"
@@ -109,7 +109,7 @@
               </ItemsControl.ItemsPanel>
               
               <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="viewModels:WeekDay">
+                <DataTemplate DataType="presentations:WeekDay">
                   <Button Background="Transparent"
                           BorderThickness="1,0,0,0"
                           BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
@@ -142,7 +142,7 @@
                       </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
-                      <DataTemplate DataType="viewModels:WeekTimelineItem">
+                      <DataTemplate DataType="presentations:WeekTimelineItem">
                         <Grid x:Name="WeekTimelineItemGrid"
                               Width="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=Button}}">
                           <!-- 待办事项（红色区块，宽度95%，居左）-->
@@ -218,7 +218,7 @@
                   </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
-                  <DataTemplate DataType="viewModels:WeekDay">
+                  <DataTemplate DataType="presentations:WeekDay">
                     <Button Background="Transparent"
                             BorderThickness="0"
                             Padding="8"
@@ -296,7 +296,7 @@
                     </ItemsControl.ItemsPanel>
                     
                     <ItemsControl.ItemTemplate>
-                      <DataTemplate DataType="viewModels:WeekDay">
+                      <DataTemplate DataType="presentations:WeekDay">
                         <Button Background="Transparent"
                                 BorderThickness="1,0,0,0"
                                 BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
@@ -327,7 +327,7 @@
                             </ItemsPanelTemplate>
                           </ItemsControl.ItemsPanel>
                           <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="viewModels:WeekTimelineItem">
+                            <DataTemplate DataType="presentations:WeekTimelineItem">
                               <Grid x:Name="WeekTimelineItemGrid"
                                     Width="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=Button}}">
                                 <!-- 待办事项 -->

@@ -4,11 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:ReQuantum.ViewModels"
              xmlns:entities="clr-namespace:ReQuantum.Modules.Calendar.Entities"
+             xmlns:presentations="clr-namespace:ReQuantum.Modules.Calendar.Presentations"
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
              x:Class="ReQuantum.Views.EventListView"
-             x:DataType="viewModels:EventListViewModel">
+             x:DataType="presentations:EventListViewModel">
   <Design.DataContext>
-    <viewModels:EventListViewModel />
+    <presentations:EventListViewModel />
   </Design.DataContext>
 
   <Grid>
@@ -18,13 +19,27 @@
             CornerRadius="8"
             Padding="16">
       <StackPanel Spacing="12">
-        <Grid ColumnDefinitions="*,Auto">
+        <Grid ColumnDefinitions="*,Auto,Auto">
           <TextBlock Grid.Column="0"
                    Text="{Binding EventsTitle.Text}" 
                    FontSize="18" 
                    FontWeight="SemiBold"
                    VerticalAlignment="Center"/>
+          
+          <!-- 教务网课程表同步按钮 -->
           <Button Grid.Column="1"
+                Command="{Binding SyncZdbkScheduleCommand}"
+                IsVisible="{Binding ShowZdbkSyncButton}"
+                Padding="12,6"
+                Margin="0,0,8,0">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+              <TextBlock Text="📅" FontSize="14" IsVisible="{Binding !IsSyncingZdbk}"/>
+              <TextBlock Text="⏳" FontSize="14" IsVisible="{Binding IsSyncingZdbk}"/>
+              <TextBlock Text="同步课程表" FontSize="14"/>
+            </StackPanel>
+          </Button>
+          
+          <Button Grid.Column="2"
                 Command="{Binding ShowAddDialogCommand}"
                 Padding="12,6">
             <StackPanel Orientation="Horizontal" Spacing="4">
@@ -56,13 +71,13 @@
                     </TextBlock>
                   </StackPanel>
                   <Button Grid.Column="1" 
-                        Command="{Binding ((viewModels:EventListViewModel)DataContext).DeleteEventCommand,
+                        Command="{Binding ((presentations:EventListViewModel)DataContext).DeleteEventCommand,
                             RelativeSource={RelativeSource AncestorType=UserControl},
                             FallbackValue={x:Null}}"
                         CommandParameter="{Binding}"
                         Padding="8,4"
                         VerticalAlignment="Top">
-                    <TextBlock Text="{Binding ((viewModels:EventListViewModel)DataContext).Localizer[Delete],
+                    <TextBlock Text="{Binding ((presentations:EventListViewModel)DataContext).Localizer[Delete],
                                         RelativeSource={RelativeSource AncestorType=UserControl}, 
                                         FallbackValue=Delete}" 
                                FontSize="12"/>

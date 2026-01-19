@@ -1,13 +1,15 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ReQuantum.Attributes;
 using ReQuantum.Infrastructure.Abstractions;
 using ReQuantum.Infrastructure.Services;
 using ReQuantum.Modules.Calendar.Entities;
 using ReQuantum.Modules.Calendar.Services;
+using ReQuantum.Modules.Common.Attributes;
+using ReQuantum.Modules.CoursesZju.Models;
 using ReQuantum.Modules.CoursesZju.Services;
 using ReQuantum.Modules.ZjuSso.Services;
 using ReQuantum.Resources.I18n;
+using ReQuantum.Utilities;
 using ReQuantum.Views;
 using System;
 using System.Collections.ObjectModel;
@@ -16,8 +18,8 @@ using System.Threading.Tasks;
 
 namespace ReQuantum.ViewModels;
 
-[AutoInject(Lifetime.Singleton, RegisterTypes = [typeof(TodoListViewModel), typeof(INotificationHandler<CalendarSelectedDateChanged>)])]
-public partial class TodoListViewModel : ViewModelBase<TodoListView>, INotificationHandler<CalendarSelectedDateChanged>
+[AutoInject(Lifetime.Singleton, RegisterTypes = [typeof(TodoListViewModel), typeof(IEventHandler<CalendarSelectedDateChanged>)])]
+public partial class TodoListViewModel : ViewModelBase<TodoListView>, IEventHandler<CalendarSelectedDateChanged>
 {
     private readonly ICalendarService _calendarService;
     private readonly ICoursesZjuService _coursesZjuService;
@@ -99,7 +101,10 @@ public partial class TodoListViewModel : ViewModelBase<TodoListView>, INotificat
 
     #endregion
 
-    public TodoListViewModel(ICalendarService calendarService, ICoursesZjuService coursesZjuService, IZjuSsoService zjuSsoService)
+    public TodoListViewModel(
+        ICalendarService calendarService,
+        ICoursesZjuService coursesZjuService,
+        IZjuSsoService zjuSsoService)
     {
         _calendarService = calendarService;
         _coursesZjuService = coursesZjuService;
@@ -252,7 +257,7 @@ public partial class TodoListViewModel : ViewModelBase<TodoListView>, INotificat
                 return;
             }
 
-            var newTodos = result.Value;
+            var newTodos = result.Value.Select(CalendarTodo.FromCoursesZjuTodo).ToArray();
             var existingCoursesZjuTodos = _calendarService.GetAllTodos()
                 .Where(t => t.IsFromCoursesZju)
                 .ToList();
@@ -282,8 +287,26 @@ public partial class TodoListViewModel : ViewModelBase<TodoListView>, INotificat
 
     #endregion
 
-    public void Handle(CalendarSelectedDateChanged notification)
+    public void Handle(CalendarSelectedDateChanged @event)
     {
-        SelectedDate = notification.Date;
+        SelectedDate = @event.Date;
+    }
+}
+
+public static class CalendarTodoExtensions
+{
+    extension(CalendarTodo todo)
+    {
+        public static CalendarTodo FromCoursesZjuTodo(CoursesZjuTodoDto czTodo)
+        {
+            return new CalendarTodo
+            {
+                Id = czTodo.Id.ToGuid(),
+                Content = $"{czTodo.CourseName}\n{czTodo.Title}",
+                DueTime = czTodo.EndTime.ToLocalTime(),
+                IsCompleted = false,
+                IsFromCoursesZju = true
+            };
+        }
     }
 }

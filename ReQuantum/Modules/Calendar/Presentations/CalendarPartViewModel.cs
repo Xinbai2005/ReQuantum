@@ -1,13 +1,14 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ReQuantum.Attributes;
 using ReQuantum.Infrastructure.Abstractions;
+using ReQuantum.Infrastructure.Entities;
+using ReQuantum.Modules.Common.Attributes;
 using ReQuantum.Resources.I18n;
+using ReQuantum.ViewModels;
 using ReQuantum.Views;
 using System;
-using LocalizedText = ReQuantum.Infrastructure.Entities.LocalizedText;
 
-namespace ReQuantum.ViewModels;
+namespace ReQuantum.Modules.Calendar.Presentations;
 
 /// <summary>
 /// 日历视图类型
@@ -147,7 +148,7 @@ public partial class CalendarPartViewModel : ViewModelBase<CalendarPartView>
     {
         var today = DateOnly.FromDateTime(DateTime.Now);
 
-        Dispatcher.Publish(new CalendarSelectedDateChanged(today));
+        Publisher.Publish(new CalendarSelectedDateChanged(today));
 
         // 更新子 ViewModel 的年月、周起始日期和选中日期
         MonthCalendarViewModel.Year = today.Year;

@@ -1,10 +1,11 @@
 using ReQuantum.Modules.Calendar.Entities;
 using ReQuantum.Modules.CoursesZju.Models;
+using ReQuantum.Modules.Zdbk.Models;
 using ReQuantum.Modules.ZjuSso.Models;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace ReQuantum.Client;
+namespace ReQuantum;
 
 [JsonSourceGenerationOptions(WriteIndented = true)]
 [JsonSerializable(typeof(ZjuSsoState))]
@@ -12,5 +13,11 @@ namespace ReQuantum.Client;
 [JsonSerializable(typeof(List<CalendarTodo>))]
 [JsonSerializable(typeof(List<CalendarEvent>))]
 [JsonSerializable(typeof(CoursesZjuTodosResponse))]
+[JsonSerializable(typeof(CoursesZjuTodoDto))]
 [JsonSerializable(typeof(CoursesZjuState))]
+[JsonSerializable(typeof(ZdbkSectionScheduleResponse))]
+[JsonSerializable(typeof(ZdbkState))]
+[JsonSerializable(typeof(AcademicCalendar))]
+[JsonSerializable(typeof(AcademicCalendarResponse))]
+[JsonSerializable(typeof(CourseAdjustment))]
 public partial class SourceGenerationContext : JsonSerializerContext;

@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
-using ReQuantum.Attributes;
 using ReQuantum.Infrastructure.Abstractions;
+using ReQuantum.Modules.Common.Attributes;
 using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;

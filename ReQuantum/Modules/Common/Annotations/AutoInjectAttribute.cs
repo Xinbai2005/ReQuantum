@@ -1,6 +1,6 @@
 using System;
 
-namespace ReQuantum.Attributes;
+namespace ReQuantum.Modules.Common.Attributes;
 
 public enum Lifetime
 {

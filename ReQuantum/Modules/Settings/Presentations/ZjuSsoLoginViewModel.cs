@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ReQuantum.Attributes;
 using ReQuantum.Infrastructure.Abstractions;
+using ReQuantum.Modules.Common.Attributes;
 using ReQuantum.Modules.ZjuSso.Services;
 using ReQuantum.Resources.I18n;
 using ReQuantum.Views;

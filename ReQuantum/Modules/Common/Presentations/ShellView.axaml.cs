@@ -30,11 +30,14 @@ public partial class ShellView : UserControl
     // Converter to get item at specific index
     public static readonly IValueConverter GetItemAtIndexConverter = new GetItemAtIndexConverterImpl();
 
-    public ShellView()
+    public ShellView() : this(SingletonManager.Instance.GetInstance<IWindowService>())
+    {
+    }
+
+    public ShellView(IWindowService windowService)
     {
         InitializeComponent();
-
-        this.GetObservable(BoundsProperty).Subscribe(SingletonManager.Instance.GetInstance<IWindowService>().UpdateWindowBounds);
+        this.GetObservable(BoundsProperty).Subscribe(windowService.UpdateWindowBounds);
     }
 
     private void MenuFabButton_OnClick(object? sender, RoutedEventArgs e)

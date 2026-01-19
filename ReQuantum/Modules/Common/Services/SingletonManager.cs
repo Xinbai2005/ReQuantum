@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 
 namespace ReQuantum.Infrastructure.Services;
@@ -20,12 +20,5 @@ public class SingletonManager
         return _serviceProvider is null
             ? throw new InvalidOperationException()
             : _serviceProvider.GetRequiredService<T>();
-    }
-
-    public object GetInstance(Type type)
-    {
-        return _serviceProvider is null
-            ? throw new InvalidOperationException()
-            : _serviceProvider.GetRequiredService(type);
     }
 }

@@ -13,6 +13,11 @@ namespace ReQuantum.Modules.Calendar.Presentations;
 /// </summary>
 public static class CalendarItemsHelper
 {
+    private static readonly ILocalizer Localizer;
+    static CalendarItemsHelper()
+    {
+        Localizer = SingletonManager.Instance.GetInstance<ILocalizer>();
+    }
     /// <summary>
     /// 为周视图生成时间线事项
     /// 待办显示规则：只在截止日期当天显示（在时间线中渲染）
@@ -133,7 +138,7 @@ public static class CalendarItemsHelper
         result.Add(new CalendarDayItem
         {
             IsMore = true,
-            Content = SingletonManager.Instance.GetInstance<ILocalizer>()[nameof(UIText.MoreItems), items.Count - 2],
+            Content = Localizer[nameof(UIText.MoreItems), items.Count - 2],
             RemainingCount = items.Count - 2
         });
         return result;
@@ -195,7 +200,7 @@ public static class CalendarItemsHelper
         result.Add(new CalendarDayItem
         {
             IsMore = true,
-            Content = SingletonManager.Instance.GetInstance<ILocalizer>()[nameof(UIText.MoreItems), items.Count - 2],
+            Content = Localizer[nameof(UIText.MoreItems), items.Count - 2],
             RemainingCount = items.Count - 2
         });
         return result;

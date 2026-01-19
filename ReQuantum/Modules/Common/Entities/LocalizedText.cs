@@ -10,9 +10,9 @@ public partial class LocalizedText : ObservableObject, IDisposable
 {
     private readonly ILocalizer _localizer;
 
-    public LocalizedText()
+    public LocalizedText(ILocalizer? localizer = null)
     {
-        _localizer = SingletonManager.Instance.GetInstance<ILocalizer>();
+        _localizer = localizer ?? SingletonManager.Instance.GetInstance<ILocalizer>();
         _localizer.CultureChanged += OnCultureChanged;
     }
 

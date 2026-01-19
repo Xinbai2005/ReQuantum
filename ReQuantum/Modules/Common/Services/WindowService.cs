@@ -1,5 +1,5 @@
 using Avalonia;
-using ReQuantum.Attributes;
+using ReQuantum.Modules.Common.Attributes;
 using System;
 using System.ComponentModel;
 

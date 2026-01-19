@@ -1,8 +1,8 @@
 using HtmlAgilityPack;
-using ReQuantum.Attributes;
 using ReQuantum.Infrastructure.Abstractions;
 using ReQuantum.Infrastructure.Models;
 using ReQuantum.Infrastructure.Services;
+using ReQuantum.Modules.Common.Attributes;
 using ReQuantum.Modules.ZjuSso.Models;
 using ReQuantum.Resources.I18n;
 using System;

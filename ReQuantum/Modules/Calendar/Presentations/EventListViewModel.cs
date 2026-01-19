@@ -1,22 +1,31 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ReQuantum.Attributes;
 using ReQuantum.Infrastructure.Abstractions;
 using ReQuantum.Infrastructure.Services;
 using ReQuantum.Modules.Calendar.Entities;
 using ReQuantum.Modules.Calendar.Services;
+using ReQuantum.Modules.Common.Attributes;
+using ReQuantum.Modules.Zdbk.Services;
+using ReQuantum.Modules.ZjuSso.Services;
 using ReQuantum.Resources.I18n;
+using ReQuantum.ViewModels;
 using ReQuantum.Views;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 using LocalizedText = ReQuantum.Infrastructure.Entities.LocalizedText;
 
-namespace ReQuantum.ViewModels;
+namespace ReQuantum.Modules.Calendar.Presentations;
 
-[AutoInject(Lifetime.Singleton, RegisterTypes = [typeof(EventListViewModel), typeof(INotificationHandler<CalendarSelectedDateChanged>)])]
-public partial class EventListViewModel : ViewModelBase<EventListView>, INotificationHandler<CalendarSelectedDateChanged>
+[AutoInject(Lifetime.Singleton, RegisterTypes = [typeof(EventListViewModel), typeof(IEventHandler<CalendarSelectedDateChanged>)])]
+public partial class EventListViewModel : ViewModelBase<EventListView>, IEventHandler<CalendarSelectedDateChanged>
 {
     private readonly ICalendarService _calendarService;
+    private readonly IZdbkSectionScheduleService _zdbkService;
+    private readonly IZdbkCalendarConverter _zdbkConverter;
+    private readonly IZjuSsoService _zjuSsoService;
 
     /// <summary>
     /// 动态标题：日程 - 日期
@@ -137,14 +146,27 @@ public partial class EventListViewModel : ViewModelBase<EventListView>, INotific
     [ObservableProperty]
     private string _warningMessage = string.Empty;
 
+    [ObservableProperty]
+    private bool _isSyncingZdbk;
+
     #endregion
 
-    public EventListViewModel(ICalendarService calendarService)
+    public EventListViewModel(
+        ICalendarService calendarService,
+        IZdbkSectionScheduleService zdbkService,
+        IZdbkCalendarConverter zdbkConverter,
+        IZjuSsoService zjuSsoService)
     {
         _calendarService = calendarService;
+        _zdbkService = zdbkService;
+        _zdbkConverter = zdbkConverter;
+        _zjuSsoService = zjuSsoService;
         EventsTitle = new LocalizedText();
         UpdateEventsTitle();
         LoadEvents();
+
+        _zjuSsoService.OnLogin += () => OnPropertyChanged(nameof(ShowZdbkSyncButton));
+        _zjuSsoService.OnLogout += () => OnPropertyChanged(nameof(ShowZdbkSyncButton));
     }
 
     #region 数据加载
@@ -244,8 +266,79 @@ public partial class EventListViewModel : ViewModelBase<EventListView>, INotific
 
     #endregion
 
-    public void Handle(CalendarSelectedDateChanged notification)
+    #region 教务网课程表同步
+
+    public bool ShowZdbkSyncButton => _zjuSsoService.IsAuthenticated;
+
+    [RelayCommand]
+    private async Task SyncZdbkScheduleAsync()
     {
-        SelectedDate = notification.Date;
+        if (IsSyncingZdbk)
+            return;
+        IsSyncingZdbk = true;
+
+        try
+        {
+            var scheduleResult = await _zdbkService.GetCurrentSemesterScheduleAsync();
+            if (!scheduleResult.IsSuccess)
+                return;
+
+            var schedule = scheduleResult.Value;
+            var allNewEvents = new List<CalendarEvent>();
+
+            // 如果有 RelatedSemesters 信息，按学期分别转换
+            if (schedule.RelatedSemesters != null && schedule.RelatedSemesters.Length == 2)
+            {
+                var semester1 = schedule.RelatedSemesters[0]; // 秋 或 春
+                var semester2 = schedule.RelatedSemesters[1]; // 冬 或 夏
+
+                var events1 = await _zdbkConverter.ConvertToCalendarEventsAsync(
+                    schedule.SectionList,
+                    schedule.AcademicYear ?? "",
+                    semester1);
+
+                var events2 = await _zdbkConverter.ConvertToCalendarEventsAsync(
+                    schedule.SectionList,
+                    schedule.AcademicYear ?? "",
+                    semester2);
+
+                allNewEvents.AddRange(events1);
+                allNewEvents.AddRange(events2);
+            }
+            else
+            {
+                allNewEvents = await _zdbkConverter.ConvertToCalendarEventsAsync(
+                    schedule.SectionList,
+                    schedule.AcademicYear ?? "",
+                    schedule.Semester ?? "");
+            }
+
+            // 标记来源
+            foreach (var evt in allNewEvents)
+                evt.IsFromZdbk = true;
+
+            // 删除旧课程，添加新课程
+            var existingZdbkEvents = _calendarService.GetAllEvents().Where(e => e.IsFromZdbk).ToList();
+            var newEventIds = allNewEvents.Select(e => e.Id).ToHashSet();
+
+            foreach (var existingEvent in existingZdbkEvents.Where(e => !newEventIds.Contains(e.Id)))
+                _calendarService.DeleteEvent(existingEvent.Id);
+
+            foreach (var evt in allNewEvents)
+                _calendarService.AddOrUpdateEvent(evt);
+
+            Publisher.Publish(new CalendarSelectedDateChanged(SelectedDate));
+        }
+        finally
+        {
+            IsSyncingZdbk = false;
+        }
+    }
+
+    #endregion
+
+    public void Handle(CalendarSelectedDateChanged @event)
+    {
+        SelectedDate = @event.Date;
     }
 }

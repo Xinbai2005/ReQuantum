@@ -2,16 +2,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:viewModels="clr-namespace:ReQuantum.ViewModels"
              xmlns:views="clr-namespace:ReQuantum.Views"
              xmlns:r="https://github.com/metaone01/RelativeControl.Avalonia"
              xmlns:presentations="clr-namespace:ReQuantum.Modules.Calendar.Presentations"
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="800"
              x:Class="ReQuantum.Views.CalendarPartView"
              x:Name="Root"
-             x:DataType="viewModels:CalendarPartViewModel">
+             x:DataType="presentations:CalendarPartViewModel">
   <Design.DataContext>
-    <viewModels:CalendarPartViewModel />
+    <presentations:CalendarPartViewModel />
   </Design.DataContext>
 
   <StackPanel Spacing="12">
@@ -82,7 +81,7 @@
     <!-- 周视图 -->
     <!-- 移动端：限制最大高度40vh，允许滚动 -->
     <!-- 桌面端：不限制高度 -->
-    <views:WeekCalendarView IsVisible="{Binding #Root.((viewModels:CalendarPartViewModel)DataContext).CurrentViewType, FallbackValue=False, Converter={x:Static presentations:EnumEqualsConverter.Instance}, ConverterParameter=Week}"
+    <views:WeekCalendarView IsVisible="{Binding #Root.((presentations:CalendarPartViewModel)DataContext).CurrentViewType, FallbackValue=False, Converter={x:Static presentations:EnumEqualsConverter.Instance}, ConverterParameter=Week}"
                            DataContext="{Binding WeekCalendarViewModel}"
                            Classes.desktop="{Binding WindowService.IsDesktopMode}"
                            r:Relative.MaxHeight="{Binding WindowService.IsDesktopMode, Converter={x:Static presentations:CalendarConverters.IsDesktopModeToMaxHeightConverter}}"/>
@@ -90,7 +89,7 @@
     <!-- 月视图 -->
     <!-- 移动端：限制最大高度40vh，内容自适应 -->
     <!-- 桌面端：不限制高度 -->
-    <views:MonthCalendarView IsVisible="{Binding #Root.((viewModels:CalendarPartViewModel)DataContext).CurrentViewType, FallbackValue=False, Converter={x:Static presentations:EnumEqualsConverter.Instance}, ConverterParameter=Month}"
+    <views:MonthCalendarView IsVisible="{Binding #Root.((presentations:CalendarPartViewModel)DataContext).CurrentViewType, FallbackValue=False, Converter={x:Static presentations:EnumEqualsConverter.Instance}, ConverterParameter=Month}"
                             DataContext="{Binding MonthCalendarViewModel}"
                             Classes.desktop="{Binding WindowService.IsDesktopMode}"
                             r:Relative.MaxHeight="{Binding WindowService.IsDesktopMode, Converter={x:Static presentations:CalendarConverters.IsDesktopModeToMaxHeightConverter}}"/>

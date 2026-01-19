@@ -1,8 +1,9 @@
-using ReQuantum.Attributes;
+using Microsoft.Extensions.Logging;
 using ReQuantum.Infrastructure.Abstractions;
 using ReQuantum.Infrastructure.Services;
 using ReQuantum.Models;
 using ReQuantum.Modules.Calendar.Entities;
+using ReQuantum.Modules.Common.Attributes;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -36,14 +37,13 @@ public interface ICalendarService
 
     // 日历生成相关
     CalendarDayData GetCalendarDayData(DateOnly date);
-    List<CalendarDayData> GetMonthCalendarData(int year, int month);
-    List<CalendarDayData> GetWeekCalendarData(DateOnly weekStartDate);
 }
 
 [AutoInject(Lifetime.Singleton)]
 public class CalendarService : ICalendarService, IDaemonService
 {
     private readonly IStorage _storage;
+    private readonly ILogger<CalendarService> _logger;
     private const string NotesKey = "Calendar:Notes";
     private const string TodosKey = "Calendar:Todos";
     private const string EventsKey = "Calendar:Events";
@@ -55,9 +55,10 @@ public class CalendarService : ICalendarService, IDaemonService
     // 日历数据字典 - 全局唯一，每个日期只有一个对象
     private readonly ConcurrentDictionary<DateOnly, CalendarDayData> _calendarDataDict = [];
 
-    public CalendarService(IStorage storage)
+    public CalendarService(IStorage storage, ILogger<CalendarService> logger)
     {
         _storage = storage;
+        _logger = logger;
         LoadData();
     }
 
@@ -204,7 +205,13 @@ public class CalendarService : ICalendarService, IDaemonService
     public List<CalendarEvent> GetEventsByDate(DateOnly date)
     {
         return _events
-            .Where(e => DateOnly.FromDateTime(e.StartTime) == date)
+            .Where(e =>
+            {
+                var startDate = DateOnly.FromDateTime(e.StartTime);
+                var endDate = DateOnly.FromDateTime(e.EndTime);
+                // 查询跨越该日期的所有事件（包括开始于该日期、结束于该日期、或跨越该日期）
+                return startDate <= date && endDate >= date;
+            })
             .OrderBy(e => e.StartTime)
             .ToList();
     }
@@ -358,42 +365,6 @@ public class CalendarService : ICalendarService, IDaemonService
 
         _calendarDataDict[date] = dayData;
         return dayData;
-    }
-
-    /// <summary>
-    /// 获取月视图日历数据
-    /// 只返回当月的日期数据，不包括前后填充
-    /// </summary>
-    public List<CalendarDayData> GetMonthCalendarData(int year, int month)
-    {
-        var result = new List<CalendarDayData>();
-        var daysInMonth = DateTime.DaysInMonth(year, month);
-
-        // 只返回当月的日期
-        for (var day = 1; day <= daysInMonth; day++)
-        {
-            var date = new DateOnly(year, month, day);
-            result.Add(GetCalendarDayData(date));
-        }
-
-        return result;
-    }
-
-    /// <summary>
-    /// 获取周视图日历数据
-    /// 返回该周7天的数据
-    /// </summary>
-    public List<CalendarDayData> GetWeekCalendarData(DateOnly weekStartDate)
-    {
-        var result = new List<CalendarDayData>();
-
-        for (var i = 0; i < 7; i++)
-        {
-            var date = weekStartDate.AddDays(i);
-            result.Add(GetCalendarDayData(date));
-        }
-
-        return result;
     }
 
     #endregion
